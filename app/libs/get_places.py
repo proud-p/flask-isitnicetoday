@@ -38,4 +38,4 @@ def get_places(longitude,latitude):
 
 if __name__ == "__main__":
 
-    # get_places(34.0365,-118.2351)
+    get_places(34.0365,-118.2351)

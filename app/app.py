@@ -3,6 +3,7 @@ import requests
 import dotenv
 import os
 import libs.get_places as place
+from geopy.geocoders import Nominatim
 
 app = Flask(__name__)
 
@@ -25,8 +26,13 @@ def index_location():
     print(latitude,longitude)
     print(type(latitude))
     print(type(longitude))
+    # initialize Nominatim API 
+    geolocator = Nominatim(user_agent="isitnicetoday")
+    location = geolocator.reverse(str(latitude)+","+str(longitude))
+    print(location)
 
-    place.get_places(longitude=longitude,latitude=latitude)
+    # place.get_places(longitude=longitude,latitude=latitude)
+
 
     return render_template("index.html")
         

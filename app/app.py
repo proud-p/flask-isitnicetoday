@@ -34,8 +34,7 @@ def index_location():
 def index():
     return render_template("index.html")
 
-# TODO Scrape wiki netflix and disney plus - filter by area
-# TODO comfy UI as API?
+# TODO and disney plus - filter by area
 # TODO connect to weather API
 
 if __name__ == "__main__":

@@ -46,21 +46,6 @@
         });
     }
 
-    function displayResults(places) {
-        const resultsDiv = document.getElementById('results');
-        if (places && places.length > 0) {
-            const placesList = places.map(place => 
-                `<div>
-                    <h3>${place.name}</h3>
-                    <p>${place.address}</p>
-                </div>`
-            ).join('');
-            resultsDiv.innerHTML = placesList;
-        } else {
-            resultsDiv.innerHTML = 'No places found';
-        }
-    }
-
     function showError(error) {
         console.error('Geolocation Error:', error);
         switch(error.code) {

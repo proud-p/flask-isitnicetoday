@@ -2,6 +2,7 @@ from flask import *
 import requests
 import dotenv
 import os
+import libs.get_places as place
 
 app = Flask(__name__)
 
@@ -19,9 +20,13 @@ endpoint_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 def index_location():
     print("JUST CHECKING")
     data = request.get_json()
-    latitude = data.get('latitude')
-    longitude = data.get('longitude')
+    latitude = float(data.get('latitude'))
+    longitude = float(data.get('longitude'))
     print(latitude,longitude)
+    print(type(latitude))
+    print(type(longitude))
+
+    place.get_places(longitude=longitude,latitude=latitude)
 
     return render_template("index.html")
         

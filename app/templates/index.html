@@ -1,18 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask App</title>
-    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+ <meta charset="UTF-8">
+ <title>Get Current Location</title>
 </head>
 <body>
-    <h1>LOCATION</h1>
-    <form>
-        
-    </form>
-    </form>
+ <button onclick="getLocation()">Get Nearby Places</button>
 
+ <script>
+     function getLocation() {
+         if (navigator.geolocation) {
+             navigator.geolocation.getCurrentPosition(showPosition, showError);
+         } else {
+             alert("Geolocation is not supported by this browser.");
+         }
+     }
 
+     function showPosition(position) {
+         const latitude = position.coords.latitude;
+         const longitude = position.coords.longitude;
+         console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+
+        //  TODO integrate with places backend
+
+         // Send these coordinates to your server to use with Google Places API
+         // For example, you could use fetch() to send a request to your backend
+     }
+
+     function showError(error) {
+         switch(error.code) {
+             case error.PERMISSION_DENIED:
+                 alert("User denied the request for Geolocation.");
+                 break;
+             case error.POSITION_UNAVAILABLE:
+                 alert("Location information is unavailable.");
+                 break;
+             case error.TIMEOUT:
+                 alert("The request to get user location timed out.");
+                 break;
+             case error.UNKNOWN_ERROR:
+                 alert("An unknown error occurred.");
+                 break;
+         }
+     }
+ </script>
 </body>
 </html>

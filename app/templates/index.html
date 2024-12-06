@@ -1,48 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <title>Get Current Location</title>
+<meta charset="UTF-8">
+<title>Get Current Location</title>
 </head>
 <body>
- <button onclick="getLocation()">Get Nearby Places</button>
+<button onclick="getLocation()">Get Nearby Places</button>
+<div id="results"></div>
 
- <script>
-     function getLocation() {
-         if (navigator.geolocation) {
-             navigator.geolocation.getCurrentPosition(showPosition, showError);
-         } else {
-             alert("Geolocation is not supported by this browser.");
-         }
-     }
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
 
-     function showPosition(position) {
-         const latitude = position.coords.latitude;
-         const longitude = position.coords.longitude;
-         console.log("Latitude: " + latitude + ", Longitude: " + longitude);
+    function showPosition(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        
+        console.log("Sending coordinates - Latitude:", latitude, "Longitude:", longitude);
 
-        //  TODO integrate with places backend
+        fetch('/location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ latitude: latitude, longitude: longitude })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            displayResults(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('results').innerHTML = 'Error fetching places: ' + error.message;
+        });
+    }
 
-         // Send these coordinates to your server to use with Google Places API
-         // For example, you could use fetch() to send a request to your backend
-     }
+    function displayResults(places) {
+        const resultsDiv = document.getElementById('results');
+        if (places && places.length > 0) {
+            const placesList = places.map(place => 
+                `<div>
+                    <h3>${place.name}</h3>
+                    <p>${place.address}</p>
+                </div>`
+            ).join('');
+            resultsDiv.innerHTML = placesList;
+        } else {
+            resultsDiv.innerHTML = 'No places found';
+        }
+    }
 
-     function showError(error) {
-         switch(error.code) {
-             case error.PERMISSION_DENIED:
-                 alert("User denied the request for Geolocation.");
-                 break;
-             case error.POSITION_UNAVAILABLE:
-                 alert("Location information is unavailable.");
-                 break;
-             case error.TIMEOUT:
-                 alert("The request to get user location timed out.");
-                 break;
-             case error.UNKNOWN_ERROR:
-                 alert("An unknown error occurred.");
-                 break;
-         }
-     }
- </script>
+    function showError(error) {
+        console.error('Geolocation Error:', error);
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+</script>
 </body>
 </html>

@@ -2,6 +2,7 @@ import dotenv
 import requests
 import os
 
+
 # load env from root 
 dotenv.load_dotenv("../.env")
 

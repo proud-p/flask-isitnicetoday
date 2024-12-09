@@ -40,15 +40,75 @@ def get_places_event(event,longitude,latitude):
     # Check if the request was successful
     if response.status_code == 200:
         places = response.json().get('results', [])
-        for place in places:
-            name = place.get('name')
-            address = place.get('vicinity')
-            print(f"Name: {name}, Address: {address}")
+        # for place in places:
+        #     name = place.get('name')
+        #     address = place.get('vicinity')
+        #     print(f"Name: {name}, Address: {address}")
         
         return places
     else:
         print("Error:", response.status_code, response.text)
 
+
+def extract_recommended_places(function_response):
+    recommendations = {}
+    for event in function_response:
+        for category, places in event.items():
+            # Extract the first operational place (or the highest-rated one)
+            recommended_place = next(
+                (place for place in places if place["business_status"] == "OPERATIONAL"),
+                None
+            )
+            if recommended_place:
+                recommendations[category] = {
+                    "name": recommended_place["name"],
+                    "rating": recommended_place.get("rating"),
+                    "vicinity": recommended_place.get("vicinity"),
+                    "photo": recommended_place.get("photos", [{}])[0].get("photo_reference"),
+                    "opening_hours": recommended_place.get("opening_hours", {}).get("open_now")
+                }
+    return recommendations
+
+
+def format_recommendations(recommendations, filter_open=False):
+    """
+    Formats the recommendations into a readable text format.
+
+    Args:
+        recommendations (dict): A dictionary containing recommended places with details.
+        filter_open (bool): If True, filters out places that are not currently open.
+
+    Returns:
+        str: A formatted string of recommendations.
+    """
+    formatted = []
+    for category, details in recommendations.items():
+        # Filter for open places if filter_open is True
+        if filter_open and not details.get("opening_hours"):
+            continue  # Skip places that are not open
+
+        recommendation_text = (
+            f"{category.capitalize()} Recommendation:\n"
+            f"Name: {details['name']}\n"
+            f"Rating: {details['rating']} ⭐\n"
+            f"Vicinity: {details['vicinity']}\n"
+        )
+        if details.get("photo"):
+            recommendation_text += f"Photo: {details['photo']}\n"
+        if details.get("opening_hours") is not None:
+            recommendation_text += (
+                "Currently Open: Yes\n" if details["opening_hours"] else "Currently Open: No\n"
+            )
+        formatted.append(recommendation_text)
+    
+    return "\n".join(formatted)
+
+
 if __name__ == "__main__":
 
-    get_places('park,art_gallery,zoo')
+    response = get_places('park,art_gallery,zoo')
+
+    extracted_response = extract_recommended_places(response)
+
+    formatted_response = format_recommendations(extracted_response, filter_open=False)
+    print(formatted_response)

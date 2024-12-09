@@ -147,7 +147,6 @@ def response_from_weather(AZURE_CLIENT, weather):
     }
 
     if gpt_tools:
-        messages.append(response)
 
         for gpt_tool in gpt_tools:
             function_name = gpt_tool.function.name
@@ -163,24 +162,44 @@ def response_from_weather(AZURE_CLIENT, weather):
             # Call the function
             function_response = function_to_call(events_list)
 
-            # Add the function response to the messages
-            messages.append(
-                {
-                    "tool_call_id": gpt_tool.id,
-                    "role": "tool",
-                    "name": function_name,
-                    "content": json.dumps(function_response, indent=4)
-                }
-            )
+            recommendations = places.extract_recommended_places(function_response)
+            formatted_recommendations = places.format_recommendations(recommendations)
+
+            # # Add the function response to the messages
+            # messages.append({
+            #     "tool_call_id": gpt_tool.id,
+            #     "role": "tool",
+            #     "name": function_name,
+            #     "content": json.dumps(function_response, indent=4)
+            # })
+            final_messages = []
+            final_messages.append({
+                "role": "system",
+                "content": (
+                    f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather, "
+                    f"help the user pick from the recommendations and explain why they should visit these places. Prioritise picking things that are currently opened. Here are the recommendations: "
+                    f"{formatted_recommendations}. For each recommendation, provide details such as the opening hours, rating, and a short description. "
+                    f"Add a fun and conversational comment about these details, making your response engaging and delightful."
+                    f"Focus on being helpful and conversational—no need to call any functions, just respond with a friendly and detailed message!"
+                )
+            })
+
+
+            final_messages.append({
+                "role": "user",
+                "content": f"what should I do today? The weather is {weather}"
+            })
+
+
 
             # Get a final response from GPT using the function's output
-            # second_response = AZURE_CLIENT.chat.completions.create(
-            #     model="GPT-4",
-            #     messages=messages
-            # )
-            # print("Second GPT Response:", second_response.choices[0].message)
+            second_response = AZURE_CLIENT.chat.completions.create(
+                model="GPT-4",
+                messages=final_messages
+            )
+            print("Second GPT Response:", second_response.choices[0].message)
     else:
-        print(response.choices[0].message)
+        print(response.choice[0].message)
 
 
 
@@ -189,11 +208,9 @@ def response_from_weather(AZURE_CLIENT, weather):
 
 
 # TODO get justwatch, return description and info
-# TODO integrate response with text to return
 # TODO integrate with google places
-# TODO second chat - should be weather, list of places for chat gpt to choose from, film description (just choose one at random)
-# TODO event list - more than 1 in list then get 2 lists and get chat gpt to choose from both lists for 2 events
-# TODO add places to message so chatgpt chooses which to go for.
+# TODO second chat - should be weather, list of places for chat gpt to choose from (done), film description (doing)
+# TODO fix kwargs args for different functions
 
 
 

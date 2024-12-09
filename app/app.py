@@ -5,6 +5,8 @@ import os
 import libs.get_places as places
 import libs.get_weather as weather
 from geopy.geocoders import Nominatim
+import libs.chatgpt as chatgpt
+from openai import AzureOpenAI
 
 app = Flask(__name__)
 
@@ -43,28 +45,40 @@ def index():
 
 @app.route("/results")
 def results():
-  city = request.args.get('city')
-  lat = request.args.get('lat')
-  lon = request.args.get('lon')
+    city = request.args.get('city')
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
   
-  if not all([city, lat, lon]):
-      return redirect(url_for('index'))
-      
-  current_weather = weather.get_weather_current(weather_key, city)
-  places_near_me = places.get_places(lon,lat)
-  print(places_near_me)
-  
-  return render_template(
-      "results.html",
-      city=city,
-      weather=current_weather,
-      coordinates={'lat': lat, 'lon': lon}
-  )
+    if not all([city, lat, lon]):
+        return redirect(url_for('index'))
+        
+    current_weather = weather.get_weather_current(weather_key, city)
+    places_near_me = places.get_places(lon,lat)
+    print(places_near_me)
+
+    # FIXME forecast weather not current weather
+    #   chatgpt
+    AZURE_CLIENT = AzureOpenAI(
+            api_key=os.getenv("AZURE_KEY"),
+            azure_endpoint=os.getenv("AZURE_ENDPOINT"),
+            api_version="2023-10-01-preview"
+        )
+    
+    # FIXME dont do this in main do it in chatgpt then just import the entire thing
+    chat_weather_response = chatgpt.response_from_weather(client = AZURE_CLIENT, weather=current_weather)
+
+    return render_template(
+        "results.html",
+        city=city,
+        weather=current_weather,
+        coordinates={'lat': lat, 'lon': lon}
+    )
 
 # TODO integrate chatgpt 2
 # TODO integrate dallee 3
 # TODO integrate netflix and whatnot 4
 # TODO integrate places 1
+# TODO response from weather fetch api
 
 if __name__ == "__main__":
     app.run(debug=True)

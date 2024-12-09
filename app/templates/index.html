@@ -5,64 +5,56 @@
 <title>Get Current Location</title>
 </head>
 <body>
-<button onclick="getLocation()">Get Nearby Places</button>
-<div id="results"></div>
+<button onclick="getLocation()">Get Weather for My Location</button>
+<div id="weather-results"></div>
 
 <script>
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError);
-        } else {
-            alert("Geolocation is not supported by this browser.");
-        }
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        alert("Geolocation is not supported by this browser.");
     }
+}
 
-    function showPosition(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        
-        console.log("Sending coordinates - Latitude:", latitude, "Longitude:", longitude);
+function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    
+    fetch('/location', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ latitude: latitude, longitude: longitude })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('weather-results').innerHTML = data.weather;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('weather-results').innerHTML = 'Error fetching weather data';
+    });
+}
 
-        fetch('/location', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ latitude: latitude, longitude: longitude })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            displayResults(data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('results').innerHTML = 'Error fetching places: ' + error.message;
-        });
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("An unknown error occurred.");
+            break;
     }
-
-    function showError(error) {
-        console.error('Geolocation Error:', error);
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                alert("User denied the request for Geolocation.");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                alert("Location information is unavailable.");
-                break;
-            case error.TIMEOUT:
-                alert("The request to get user location timed out.");
-                break;
-            case error.UNKNOWN_ERROR:
-                alert("An unknown error occurred.");
-                break;
-        }
-    }
+}
 </script>
+
 </body>
 </html>

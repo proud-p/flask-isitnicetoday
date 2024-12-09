@@ -213,6 +213,9 @@ def get_movie_list(country, service, genre=None, release_year_from=None, release
 
 # TODO get random movie from list, get information and return all info.
 
+def get_movie_info():
+    return
+
 
 if __name__ == "__main__":
     get_movie_list(country="thailand", service="Netflix",

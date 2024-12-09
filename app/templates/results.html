@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather Results</title>
+</head>
+<body>
+  <h1>Weather Results for {{ city }}</h1>
+  <div id="weather-info">
+      {{ weather }}
+  </div>
+  <div id="location-info">
+      Latitude: {{ coordinates.lat }}<br>
+      Longitude: {{ coordinates.lon }}
+  </div>
+  <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>

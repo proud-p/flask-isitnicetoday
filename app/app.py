@@ -33,11 +33,31 @@ def index_location():
     current_weather = weather.get_weather_current(weather_key,city)
 
     # Return JSON response with weather data
-    return jsonify({'weather': current_weather})
+    return jsonify({'weather': current_weather,
+                    'redirect': f'/results?city={city}&lat={latitude}&lon={longitude}'})
 
 @app.route("/", methods=["GET"])
 def index():
+    # initial landing page hit
     return render_template("index.html")
+
+@app.route("/results")
+def results():
+  city = request.args.get('city')
+  lat = request.args.get('lat')
+  lon = request.args.get('lon')
+  
+  if not all([city, lat, lon]):
+      return redirect(url_for('index'))
+      
+  current_weather = weather.get_weather_current(weather_key, city)
+  
+  return render_template(
+      "results.html",
+      city=city,
+      weather=current_weather,
+      coordinates={'lat': lat, 'lon': lon}
+  )
 
 if __name__ == "__main__":
     app.run(debug=True)

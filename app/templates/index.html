@@ -30,7 +30,11 @@ function showPosition(position) {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('weather-results').innerHTML = data.weather;
+        if (data.redirect) {
+                  window.location.href = data.redirect;
+              } else {
+                  document.getElementById('weather-results').innerHTML = data.weather;
+              }
     })
     .catch(error => {
         console.error('Error:', error);

@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import json
 import requests
 import get_places as places
+import get_justwatch as justwatch
+import get_weather as weather
 
 
 
@@ -114,7 +116,7 @@ def return_first_functions():
 
 
 # Convert user's question into a GraphQL query string
-def response_from_weather(AZURE_CLIENT, weather):
+def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude):
     messages = [
             {
     "role": "system",
@@ -142,9 +144,26 @@ def response_from_weather(AZURE_CLIENT, weather):
     print("GPT TOOLS"+"-"*20)
     print(gpt_tools)
 
+    # FIXME is there a better way to do this?
     available_functions = {
-        "get_places":places.get_places
+        "get_places": {
+            "function": places.get_places,  # The actual function to call
+            "chatgpt_params": ["events_list"],  # Parameters expected from ChatGPT's tool call
+            "additional_params": {  # Default or extra parameters to pass
+                "longitude": longitude,
+                "latitude": latitude,
+                "skip_opened": False
+            }
+        },
+        "get_movie_list": {
+            "function": justwatch.get_movie_list,
+            "chatgpt_params": ["country", "service", "genre", "release_year_from", "release_year_until"],
+            "additional_params": {  # Defaults if not provided
+                "headless": True
+            }
+        }
     }
+
 
     if gpt_tools:
 
@@ -159,26 +178,19 @@ def response_from_weather(AZURE_CLIENT, weather):
             # Extract the question parameter
             events_list = function_parameters.get("events_list")
 
+            # FIXME dont't hardcode this
             # Call the function
-            function_response = function_to_call(events_list)
-
-            recommendations = places.extract_recommended_places(function_response)
-            formatted_recommendations = places.format_recommendations(recommendations)
+            function_response = function_to_call["function"](events_list)
 
             # # Add the function response to the messages
-            # messages.append({
-            #     "tool_call_id": gpt_tool.id,
-            #     "role": "tool",
-            #     "name": function_name,
-            #     "content": json.dumps(function_response, indent=4)
-            # })
+      
             final_messages = []
             final_messages.append({
                 "role": "system",
                 "content": (
                     f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather, "
                     f"help the user pick from the recommendations and explain why they should visit these places. Prioritise picking things that are currently opened. Here are the recommendations: "
-                    f"{formatted_recommendations}. For each recommendation, provide details such as the opening hours, rating, and a short description. "
+                    f"{function_response}. For each recommendation, provide details such as the opening hours, rating, and a short description. "
                     f"Add a fun and conversational comment about these details, making your response engaging and delightful."
                     f"Focus on being helpful and conversational—no need to call any functions, just respond with a friendly and detailed message!"
                 )
@@ -227,7 +239,10 @@ if __name__ == "__main__":
         api_version="2023-10-01-preview"
     )
 
+    WEATHER_KEY = os.getenv("WEATHER_KEY")
+
+    weather_hour = weather.weather_hour_string(WEATHER_KEY,"london")
 
 
-    response = response_from_weather(AZURE_CLIENT, "sunny all day")
+    response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=25.594095,longitude=85.137566,city="bangkok")
    

@@ -6,7 +6,7 @@ import os
 # load env from root 
 dotenv.load_dotenv("../.env")
 
-def get_places(events_list_string,longitude="85.137566",latitude="25.594095" ):
+def get_places(events_list_string,longitude="85.137566",latitude="25.594095" ,skip_opened=False):
     events_list = events_list_string.split(",")
     
     all_places_dict = []
@@ -14,7 +14,10 @@ def get_places(events_list_string,longitude="85.137566",latitude="25.594095" ):
         places = get_places_event(event_type,longitude,latitude)
         all_places_dict.append({event_type:places})
 
-    return all_places_dict
+    extracted_recommended_places = extract_recommended_places(all_places_dict)
+    formatted_recommended_places = format_recommendations(extracted_recommended_places,skip_opened)
+
+    return formatted_recommended_places
 
 
 
@@ -108,7 +111,4 @@ if __name__ == "__main__":
 
     response = get_places('park,art_gallery,zoo')
 
-    extracted_response = extract_recommended_places(response)
-
-    formatted_response = format_recommendations(extracted_response, filter_open=False)
-    print(formatted_response)
+    print(response)

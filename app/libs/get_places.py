@@ -19,8 +19,9 @@ def get_places(longitude,latitude):
     # Parameters for the request
     params = {
     'location': f'{latitude},{longitude}',  # Latitude and longitude 
-    'radius': 1500,                  # Radius in meters
-    'type': 'restaurant',            # Type of place (e.g., restaurant, cafe, etc.)
+    'radius': 3000,                  # Radius in meters
+    'type': 'restaurant',            # Type of place (e.g., restaurant, cafe, etc.) 
+                                        #  https://developers.google.com/maps/documentation/places/web-service/supported_types
     'key': api_key
     }
 

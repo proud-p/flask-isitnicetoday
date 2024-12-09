@@ -191,32 +191,83 @@ def get_movie_list(country, service, genre=None, release_year_from=None, release
             break
         last_height = new_height
 
+    movies = []
     # Process items
     for item in title_items[:items_to_load]:
         try:
             # Find the image element
             img = item.find('img', class_='picture-comp__img')
 
-            link = item.find('a')['href']
+            
             if img:
                 title = img.get('alt', 'No title')
                 image_url = img.get('src', 'No image')
+                link = item.find('a')['href']
 
                 print(f"Title: {title}")
                 print(f"Image URL: {image_url}")
                 print(f"Link to info page: {link}")
                 print("-" * 40)
+
+                movies.append({"title":title,"image_url":image_url,"info_url":link})
         except Exception as e:
             print(f"Error processing item: {e}")
 
     driver.quit()
 
+    return movies
+
 # TODO get random movie from list, get information and return all info.
 
-def get_movie_info():
-    return
+def get_movie_info(info_url):
+    # info_url has country/movie name e.g. /uk/movie/gift-wrapped")
+
+
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")
+
+    # Initialize the driver
+    driver = webdriver.Chrome(options=chrome_options)
+    description = None
+
+    try:
+        # Load the page
+        driver.get("https://www.justwatch.com"+info_url)
+
+        # Wait for the description element to be present
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "text-wrap-pre-line"))
+        )
+
+        # Get the page source and parse with BeautifulSoup
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+        # Find the description element
+        description = soup.find('p', class_='text-wrap-pre-line')
+
+        if description:
+            print("Description:", description.text.strip())
+        else:
+            print("Description not found")
+            
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        driver.quit()
+
+
+    return description
 
 
 if __name__ == "__main__":
-    get_movie_list(country="thailand", service="Netflix",
+    import random
+
+    movies = get_movie_list(country="thailand", service="Netflix",
                    genre="Action", release_year_from=2000, release_year_until=2014)
+    
+
+    movie_info = get_movie_info(movies[random.randrange(1,len(movies))]["info_url"])
+    
+    

@@ -124,20 +124,6 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
 
     functions = return_first_functions()
 
-    response = AZURE_CLIENT.chat.completions.create(
-        model="GPT-4",
-        messages=messages,
-        tools=functions,
-        tool_choice="auto"
-    )
-
-    # Debugging response
-    print("Response from Azure OpenAI:", response)
-
-    gpt_tools = response.choices[0].message.tool_calls
-
-    print("GPT TOOLS"+"-"*20)
-    print(gpt_tools)
 
     # FIXME is there a better way to do this?
     available_functions = {
@@ -160,6 +146,23 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
         }
     }
 
+    gpt_tools=None
+
+    while not gpt_tools:
+        response = AZURE_CLIENT.chat.completions.create(
+        model="GPT-4",
+        messages=messages,
+        tools=functions,
+        tool_choice="auto"
+        )
+
+        # Debugging response
+        print("Response from Azure OpenAI:", response)
+
+        gpt_tools = response.choices[0].message.tool_calls
+        print("DIDNT GET TOOLS RECALLING")
+
+    print("GPT TOOLS CALL OKAY"+"-"*50)
 
     if gpt_tools:
 

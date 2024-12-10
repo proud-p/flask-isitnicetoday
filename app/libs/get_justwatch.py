@@ -426,6 +426,7 @@ if __name__ == "__main__":
         )
         print(f"Found {len(movies)} movies with descriptions")
         
+        print(movies)
     except Exception as e:
         print(f"Error in main execution: {e}")
     

@@ -206,7 +206,7 @@ def response_from_weather(AZURE_CLIENT, latitude,longitude, weather= None):
             final_messages.append({
                 "role": "system",
                 "content": (
-                    f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather, "
+                    f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather and location. Returned text will be shown on website, so if you have paragraphs please put in html linebreak elements <br>"
                     
                 )
             })

@@ -11,6 +11,10 @@ import time
 from selenium.webdriver.chrome.options import Options
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import multiprocessing
+from multiprocessing import Pool
+
+multiprocessing.freeze_support()
 
 
 def get_JUSTWATCH_COUNTRIES():
@@ -273,16 +277,20 @@ def get_movie_info(info_url):
         driver.quit()
 
 
-def fetch_movie_info_threaded(movie):
+def fetch_movie_info_process(movie):
     """
-    Helper function to fetch movie description in a thread-safe manner.
+    Helper function to fetch movie description in a process-safe manner.
     """
-    movie["description"] = get_movie_info(movie["info_url"])
-    return movie
+    try:
+        movie["description"] = get_movie_info(movie["info_url"])
+        return movie
+    except Exception as e:
+        print(f"Error processing movie {movie['title']}: {e}")
+        return None
 
 def random_movies_description(movies_list):
     """
-    Fetch descriptions for up to 5 movies using threading for parallel execution.
+    Fetch descriptions for up to 5 movies using multiprocessing for parallel execution.
     """
     final_list = []
     iter_count = min(len(movies_list), 5)  # Fetch up to 5 movies
@@ -290,16 +298,24 @@ def random_movies_description(movies_list):
     # Randomly sample movies if the list is longer than 5
     sampled_movies = random.sample(movies_list, iter_count)
 
-    with ThreadPoolExecutor(max_workers=5) as executor:  # Adjust max_workers based on  system's capacity
-        # Submit tasks to the executor
-        futures = {executor.submit(fetch_movie_info_threaded, movie): movie for movie in sampled_movies}
+    # Determine number of processes (use fewer processes than CPU cores)
+    num_processes = min(multiprocessing.cpu_count() - 1, iter_count)
+    num_processes = max(1, num_processes)  # Ensure at least 1 process
 
-        # Collect results as they complete
-        for future in tqdm(as_completed(futures), total=iter_count, desc="Fetching movie descriptions"):
-            try:
-                final_list.append(future.result())
-            except Exception as e:
-                print(f"An error occurred: {e}")
+    try:
+        with Pool(processes=num_processes) as pool:
+            # Use tqdm to show progress
+            results = list(tqdm(
+                pool.imap(fetch_movie_info_process, sampled_movies),
+                total=len(sampled_movies),
+                desc="Fetching movie descriptions"
+            ))
+
+            # Filter out None results and add successful ones to final list
+            final_list = [result for result in results if result is not None]
+
+    except Exception as e:
+        print(f"Error in multiprocessing: {e}")
 
     return final_list
 
@@ -387,12 +403,30 @@ if __name__ == "__main__":
     # driver_example(country="thailand", service="Netflix",
     #                genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
 
-    movies = get_movie_list(country="thailand", service="Netflix",
-                   genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
+    # movies = get_movie_list(country="thailand", service="Netflix",
+    #                genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
     
     # print(movies)
     
 
     # movie_info = get_movie_info(movies[random.randrange(1,len(movies))]["info_url"])
+
+
+    import multiprocessing
+    multiprocessing.freeze_support()
+
+    try:
+        movies = get_movie_list(
+            country="thailand", 
+            service="Netflix",
+            genre="Action", 
+            release_year_from=2000, 
+            release_year_until=2014, 
+            headless=True
+        )
+        print(f"Found {len(movies)} movies with descriptions")
+        
+    except Exception as e:
+        print(f"Error in main execution: {e}")
     
     

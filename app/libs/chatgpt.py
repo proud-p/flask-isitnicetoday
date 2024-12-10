@@ -1,8 +1,10 @@
 
 import sys
 import os
-
+from PIL import Image
 from geopy.geocoders import Nominatim
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(project_root, "app"))
 
 
 
@@ -256,17 +258,84 @@ def response_from_weather(AZURE_CLIENT, latitude,longitude, weather= None):
 
     return returned_response
 
+def get_weather_specific_prompt(weather):
+    base_style = """An adorable, whimsical cloud character with a playful smile, rosy cheeks, and expressive features, floating in a cozy and colorful environment. The illustration has a warm, hand-drawn look with very thin or no outlines, soft textures, and muted tones. The cloud is surrounded by a dynamic, inviting scene, such as a rainy day with tiny raindrops falling gently or a sunny day with warm sunlight. The art style is reminiscent of children's storybooks, with soft, warm shading and a painterly feel, as if created with watercolors or pastels. The overall composition should feel vibrant, yet simple, with a heartwarming, storybook charm."""
+
+    prompts = {
+        "rain": f"""A cheerful cloud character watching TV on couch at home while it is raining outside the window. Home has cloud inspired elements, cozy and warm.
+        Small blue raindrops.
+        {base_style}""",
+        
+        "sun": f"""A cool cloud character wearing sunglasses in a minimalist 2D animation style.
+        Small yellow sun rays in simple geometric shapes behind the cloud.
+        {base_style}""",
+        
+        "snow": f"""A cozy cloud character wearing a tiny winter hat in a minimalist 2D animation style.
+        Simple geometric snowflakes floating around.
+        {base_style}""",
+        
+        "default": f"""A friendly cloud character with a big smile in a minimalist 2D animation style.
+        Simple, clean design with basic geometric shapes.
+        {base_style}"""
+    }
+
+    # Determine weather type and return appropriate prompt
+    if any(word in weather.lower() for word in ["rain", "shower", "drizzle"]):
+        return prompts["rain"]
+    elif any(word in weather.lower() for word in ["sun", "clear", "fair"]):
+        return prompts["sun"]
+    elif any(word in weather.lower() for word in ["snow", "sleet", "frost"]):
+        return prompts["snow"]
+    else:
+        return prompts["default"]
 
 
+def generate_cloud_image(AZURE_CLIENT,weather):
+    """Generate a DALL-E image of a cute cloud character"""
+
+    prompt = get_weather_specific_prompt(weather)
+    try:
+        response = AZURE_CLIENT.images.generate(
+        model="dalle3", # the name of your DALL-E 3 deployment
+        prompt=prompt,
+        n=1
+        )
+        
+        # Get the URL of the generated image
+        json_response = json.loads(response.model_dump_json())
+        image_dir = "C:/Users/Avika/OneDrive - Hogarth Worldwide/Documents/CTA/coding-projects/flask-isitnicetoday/app/static/images"
+
+        # If the directory doesn't exist, create it
+        if not os.path.isdir(image_dir):
+            os.mkdir(image_dir)
+
+        image_path = os.path.join(image_dir, 'generated_image.png')
+
+        # Retrieve the generated image
+        # same thing as right clicking on an image on the web
+        # and saving 'Save As'
+
+        image_url = json_response["data"][0]["url"]  # extract image URL from response
+        generated_image = requests.get(image_url).content  # download the image
+        with open(image_path, "wb") as image_file:
+            image_file.write(generated_image)
+
+        # Display the image in the default image viewer
+        # right clicking on your saved image and opening with
+        # your default app
+        image = Image.open(image_path)
+        image.show()
 
 
+        # image_path = os.path.join(image_dir, 'generated_image.png')
+        # return image_url
 
+    except Exception as e:
+        print(f"Error generating cloud image: {e}")
+        # Return a fallback image URL or None
+        return None
 
-
-
-# TODO second chat - should be weather, list of places for chat gpt to choose from (done), film description (done)
-# TODO fix kwargs args for different functions
-
+# TODO also return picture links and prompt for dallee and dallee for pics
 
 
 
@@ -295,6 +364,13 @@ if __name__ == "__main__":
         api_version="2023-10-01-preview"
     )
 
+    AZURE_CLIENT_DALLE = AzureOpenAI(
+        api_key=os.getenv("AZURE_KEY"),
+        azure_endpoint=os.getenv("AZURE_ENDPOINT"),
+        api_version="2023-12-01-preview"
+    )
+
+
     WEATHER_KEY = os.getenv("WEATHER_KEY")
 
     # weather_hour = weather.weather_hour_string(WEATHER_KEY,"bangkok")
@@ -304,7 +380,10 @@ if __name__ == "__main__":
     # response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=25.594095,longitude=85.137566,city="bangkok",country="Thailand")
 
     # response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=51.5072,longitude=0.1276)
-    response = response_from_weather(AZURE_CLIENT, latitude=51.5072,longitude=0.1276)
+    # response = response_from_weather(AZURE_CLIENT, latitude=51.5072,longitude=0.1276)
+
+    cloud_image = generate_cloud_image(AZURE_CLIENT_DALLE,"rain")
+    print(cloud_image)
 
 else:
     # When imported as module

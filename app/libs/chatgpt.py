@@ -1,14 +1,3 @@
-import os
-# set to root
-os.chdir("../")
-
-from openai import AzureOpenAI
-from dotenv import load_dotenv
-import json
-import requests
-import get_places as places
-import get_justwatch as justwatch
-import get_weather as weather
 
 
 
@@ -116,7 +105,8 @@ def return_first_functions():
 
 
 # Convert user's question into a GraphQL query string
-def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude):
+# FIXME collapse the loc stuff into one
+def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country):
     messages = [
             {
     "role": "system",
@@ -157,8 +147,9 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude):
         },
         "get_movie_list": {
             "function": justwatch.get_movie_list,
-            "chatgpt_params": ["country", "service", "genre", "release_year_from", "release_year_until"],
-            "additional_params": {  # Defaults if not provided
+            "chatgpt_params": [ "service", "genre", "release_year_from", "release_year_until"],
+            "additional_params": { 
+                "country": country, # Defaults if not provided
                 "headless": True
             }
         }
@@ -169,18 +160,21 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude):
 
         for gpt_tool in gpt_tools:
             function_name = gpt_tool.function.name
-            function_to_call = available_functions[function_name]
+            function_to_call = available_functions[function_name]["function"]
             function_parameters = json.loads(gpt_tool.function.arguments)
 
             print("FUNCTION PARAMETERS:")
             print(function_parameters)
 
-            # Extract the question parameter
-            events_list = function_parameters.get("events_list")
-
-            # FIXME dont't hardcode this
             # Call the function
-            function_response = function_to_call["function"](events_list)
+            # Dynamically construct kwargs for the function call
+            kwargs = {
+                k: function_parameters.get(k, available_functions[function_name]["additional_params"].get(k))
+                for k in available_functions[function_name]["chatgpt_params"]
+            }
+            kwargs.update(available_functions[function_name]["additional_params"])
+
+            function_response = function_to_call(**kwargs)
 
             # # Add the function response to the messages
       
@@ -228,6 +222,16 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude):
 
 
 if __name__ == "__main__":
+    import os
+
+    from openai import AzureOpenAI
+    from dotenv import load_dotenv
+    import json
+    import requests
+    import get_places as places
+    import get_justwatch as justwatch
+    import get_weather as weather
+
     os.chdir("../")
     # Load environment variables
     load_dotenv()
@@ -244,5 +248,17 @@ if __name__ == "__main__":
     weather_hour = weather.weather_hour_string(WEATHER_KEY,"london")
 
 
-    response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=25.594095,longitude=85.137566,city="bangkok")
+    response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=25.594095,longitude=85.137566,city="bangkok",country="Thailand")
    
+if __name__ == "app.py":
+    import os
+    # set to root
+    os.chdir("../")
+
+    from openai import AzureOpenAI
+    from dotenv import load_dotenv
+    import json
+    import requests
+    import libs.get_places as places
+    import libs.get_justwatch as justwatch
+    import libs.get_weather as weather

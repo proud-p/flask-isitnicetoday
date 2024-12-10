@@ -1,8 +1,9 @@
+import os
 from flask import *
 import requests
 import dotenv
 import os
-import libs.get_places as places
+# import libs.get_places as places
 import libs.get_weather as weather
 from geopy.geocoders import Nominatim
 import libs.chatgpt as chatgpt
@@ -29,6 +30,7 @@ def index_location():
     geolocator = Nominatim(user_agent="isitnicetoday")
     location = geolocator.reverse(str(latitude)+","+str(longitude))
     city = location.raw["address"]["city"]
+    country = location.raw["address"]["country"]
 
     # get weather
     
@@ -36,7 +38,7 @@ def index_location():
 
     # Return JSON response with weather data
     return jsonify({'weather': current_weather,
-                    'redirect': f'/results?city={city}&lat={latitude}&lon={longitude}'})
+                    'redirect': f'/results?country={country}&city={city}&lat={latitude}&lon={longitude}'})
 
 @app.route("/", methods=["GET"])
 def index():
@@ -46,6 +48,7 @@ def index():
 @app.route("/results")
 def results():
     city = request.args.get('city')
+    country = request.args.get('country')
     lat = request.args.get('lat')
     lon = request.args.get('lon')
   
@@ -53,8 +56,8 @@ def results():
         return redirect(url_for('index'))
         
     current_weather = weather.get_weather_current(weather_key, city)
-    places_near_me = places.get_places(lon,lat)
-    print(places_near_me)
+    # places_near_me = places.get_places(lon,lat)
+    # print(places_near_me)
 
     # FIXME forecast weather not current weather
     #   chatgpt
@@ -65,11 +68,12 @@ def results():
         )
     
     # FIXME dont do this in main do it in chatgpt then just import the entire thing
-    chat_weather_response = chatgpt.response_from_weather(client = AZURE_CLIENT, weather=current_weather)
+    # chat_weather_response = chatgpt.response_from_weather(client = AZURE_CLIENT, weather=current_weather,)
 
     return render_template(
         "results.html",
         city=city,
+        country=country,
         weather=current_weather,
         coordinates={'lat': lat, 'lon': lon}
     )

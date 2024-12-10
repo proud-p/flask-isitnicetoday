@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
 from selenium.webdriver.chrome.options import Options
+from tqdm import tqdm
 
 
 def get_JUSTWATCH_COUNTRIES():
@@ -215,7 +216,9 @@ def get_movie_list(country, service, genre=None, release_year_from=None, release
 
     driver.quit()
 
-    return movies
+    selected_movies_with_description = random_movies_description(movies_list=movies)
+
+    return selected_movies_with_description
 
 # TODO get random movie from list, get information and return all info.
 
@@ -246,19 +249,40 @@ def get_movie_info(info_url):
         description = soup.find('p', class_='text-wrap-pre-line')
 
         if description:
-            print("Description:", description.text.strip())
+            description = description.text.strip()
+            print("Description:", description)
+            return description
         else:
             print("Description not found")
+            return "ERROR"
             
 
     except Exception as e:
         print(f"An error occurred: {e}")
+        return "{e}"
 
     finally:
         driver.quit()
 
 
-    return description
+    
+
+def random_movies_description(movies_list):
+    """Pick 5 movies, or less if there is less than that in the returned list, and get movie descriptions for them, for chatgpt to pick"""
+    final_list = []
+    
+    # min between movie list length and 5
+    iter =min(len(movies_list),5)
+
+    for i in tqdm(range(iter)):
+        movie = movies_list[random.randrange(iter)]
+        info = get_movie_info(movie["info_url"])
+        movie["description"] = info
+        final_list.append(movie)
+
+        i+=1
+    
+    return final_list
 
 
 if __name__ == "__main__":
@@ -267,7 +291,9 @@ if __name__ == "__main__":
     movies = get_movie_list(country="thailand", service="Netflix",
                    genre="Action", release_year_from=2000, release_year_until=2014)
     
+    print(movies)
+    
 
-    movie_info = get_movie_info(movies[random.randrange(1,len(movies))]["info_url"])
+    # movie_info = get_movie_info(movies[random.randrange(1,len(movies))]["info_url"])
     
     

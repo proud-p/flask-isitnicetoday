@@ -1,4 +1,8 @@
 
+import sys
+import os
+
+
 
 
 def return_first_functions():
@@ -174,6 +178,7 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
             }
             kwargs.update(available_functions[function_name]["additional_params"])
 
+            # call function
             function_response = function_to_call(**kwargs)
 
             # # Add the function response to the messages
@@ -183,17 +188,40 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
                 "role": "system",
                 "content": (
                     f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather, "
-                    f"help the user pick from the recommendations and explain why they should visit these places. Prioritise picking things that are currently opened. Here are the recommendations: "
-                    f"{function_response}. For each recommendation, provide details such as the opening hours, rating, and a short description. "
-                    f"Add a fun and conversational comment about these details, making your response engaging and delightful."
-                    f"Focus on being helpful and conversational—no need to call any functions, just respond with a friendly and detailed message!"
+                    
                 )
             })
+
+            if gpt_tool == "get_places" or "get_place_and_movie" :
+                final_messages.append({
+                    "role": "system",
+                    "content": (
+                        f"You've just called {gpt_tool} with {kwargs} parameters. the Event list parameter is what the previous bot chose as activity types for the user to do on this {weather} day. The {gpt_tool} you called returned a list of places to you for each of the event type for you to choose from  "
+                        f"help the user pick from the recommendations and explain why they should visit these places. Don't pick too many things, we want to give them a chill day.  Prioritise picking things that are currently opened. Here are the recommendations: "
+                        f"{function_response}. For each recommendation, provide details such as the opening hours, rating, and a short description."
+                        f"Add a fun and conversational comment about these details, making your response engaging and delightful."
+                        f"Focus on being helpful and conversational—no need to call any functions, just respond with a friendly and detailed message! Phrase it like you are planning out the chill day for them from morning till evening."
+                    )
+                })
+
+            if gpt_tool == "get_movie_list" or gpt_tool == "get_place_and_movie":
+                final_messages.append({
+                    "role": "system",
+                    "content": (
+                        f"You've just called {gpt_tool} with the parameters {kwargs}. The service parameter refers to the streaming service the user has access to, "
+                        f"while the genre, release year range, and other details provide filters to match the user's preferences. Your previous instance chose these parameters because you thought it matches the weather. The {gpt_tool} you called returned a list of movies matching those criterias "
+                        f"Help the user choose from the recommendations and explain why they should watch a particular movie.  "
+                        f"Here are the movie recommendations: {function_response}. For each movie, provide details such as the title, genre, release year, and streaming service it is available on. "
+                        f"Add a fun and conversational comment about the movie's plot, cast, or general vibe to make the recommendation engaging. "
+                        f"Focus on being witty and approachable, but also ensure your response is clear and informative. There is no need to call any functions—just respond with an engaging and detailed message!"
+                    )
+                })
+
 
 
             final_messages.append({
                 "role": "user",
-                "content": f"what should I do today? The weather is {weather}"
+                "content": f"what should I do today? The weather is {weather}, in {city}"
             })
 
 
@@ -222,6 +250,9 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
 
 
 if __name__ == "__main__":
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.join(project_root, "app"))
+
     import os
 
     from openai import AzureOpenAI
@@ -245,20 +276,10 @@ if __name__ == "__main__":
 
     WEATHER_KEY = os.getenv("WEATHER_KEY")
 
-    weather_hour = weather.weather_hour_string(WEATHER_KEY,"london")
+    weather_hour = weather.weather_hour_string(WEATHER_KEY,"bangkok")
 
 
     response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=25.594095,longitude=85.137566,city="bangkok",country="Thailand")
-   
-if __name__ == "app.py":
-    import os
-    # set to root
-    os.chdir("../")
 
-    from openai import AzureOpenAI
-    from dotenv import load_dotenv
-    import json
-    import requests
-    import libs.get_places as places
-    import libs.get_justwatch as justwatch
-    import libs.get_weather as weather
+    # TODO integrate this into main
+   

@@ -6,8 +6,8 @@ import os
 # load env from root 
 dotenv.load_dotenv("../.env")
 
-def get_places(events_list_string,longitude="85.137566",latitude="25.594095" ,skip_opened=False):
-    events_list = events_list_string.split(",")
+def get_places(events_list,longitude="85.137566",latitude="25.594095" ,skip_opened=False):
+    events_list = events_list.split(",")
     
     all_places_dict = []
     for event_type in events_list:

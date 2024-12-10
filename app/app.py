@@ -8,6 +8,7 @@ import libs.get_weather as weather
 from geopy.geocoders import Nominatim
 import libs.chatgpt as chatgpt
 from openai import AzureOpenAI
+from libs.chatgpt import response_from_weather
 
 app = Flask(__name__)
 
@@ -65,17 +66,21 @@ def results():
             api_key=os.getenv("AZURE_KEY"),
             azure_endpoint=os.getenv("AZURE_ENDPOINT"),
             api_version="2023-10-01-preview"
+
         )
     
     # FIXME dont do this in main do it in chatgpt then just import the entire thing
     # chat_weather_response = chatgpt.response_from_weather(client = AZURE_CLIENT, weather=current_weather,)
+
+    response = response_from_weather(AZURE_CLIENT,latitude=lat,longitude=lon)
 
     return render_template(
         "results.html",
         city=city,
         country=country,
         weather=current_weather,
-        coordinates={'lat': lat, 'lon': lon}
+        coordinates={'lat': lat, 'lon': lon},
+        response =response
     )
 
 # TODO integrate chatgpt 2

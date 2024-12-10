@@ -125,7 +125,6 @@ def response_from_weather(AZURE_CLIENT, latitude,longitude, weather= None):
         weather = weather_hour_string(WEATHER_KEY,city)
 
 
-
     messages = [
             {
     "role": "system",
@@ -231,7 +230,7 @@ def response_from_weather(AZURE_CLIENT, latitude,longitude, weather= None):
                         f"Help the user choose from the recommendations and explain why they should watch a particular movie.  "
                         f"Here are the movie recommendations: {function_response}. For each movie, provide details such as the title, genre, release year, and streaming service it is available on. "
                         f"Add a fun and conversational comment about the movie's plot, cast, or general vibe to make the recommendation engaging. Link the genre or vibes of the movie to the weather to explain why you picked them for the user"
-                        f"Focus on being witty and approachable, but also ensure your response is clear and informative. There is no need to call any functions—just respond with an engaging and detailed message! Put lots of emoji in as well for cuteness and format the response into paragraphs nicely"
+                        f"Focus on being witty and approachable, but also ensure your response is clear and informative. There is no need to call any functions—just respond with an engaging and detailed message! Put lots of emoji in as well for cuteness and format the response into paragraphs nicely. Tell the user as well that because it's {weather} we should watch movies instead of going out or in addition to going out because it is mixed weather."
                     )
                 })
 
@@ -249,9 +248,13 @@ def response_from_weather(AZURE_CLIENT, latitude,longitude, weather= None):
                 model="GPT-4",
                 messages=final_messages
             )
-            print("Second GPT Response:", second_response.choices[0].message)
+
+            returned_response = second_response.choices[0].message.content
+            print("Second GPT Response:", returned_response)
     else:
         print(response.choices[0].message)
+
+    return returned_response
 
 
 
@@ -303,5 +306,13 @@ if __name__ == "__main__":
     # response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=51.5072,longitude=0.1276)
     response = response_from_weather(AZURE_CLIENT, latitude=51.5072,longitude=0.1276)
 
-    # TODO integrate this into main
-   
+else:
+    # When imported as module
+    from libs.get_weather import weather_hour_string
+    import libs.get_justwatch as justwatch
+    import libs.get_places as places
+    from openai import AzureOpenAI
+    from dotenv import load_dotenv
+    import json
+    import requests
+

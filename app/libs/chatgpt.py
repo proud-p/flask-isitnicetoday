@@ -2,6 +2,8 @@
 import sys
 import os
 
+from geopy.geocoders import Nominatim
+
 
 
 
@@ -111,7 +113,19 @@ def return_first_functions():
 
 # Convert user's question into a GraphQL query string
 # FIXME collapse the loc stuff into one
-def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country):
+def response_from_weather(AZURE_CLIENT, latitude,longitude, weather= None):
+    geolocator = Nominatim(user_agent="isitnicetoday")
+
+    location = geolocator.reverse(str(latitude)+","+str(longitude))
+    city = location.raw["address"]["city"]
+    country = location.raw["address"]["country"]
+
+    if weather is None:
+        WEATHER_KEY = os.getenv("WEATHER_KEY")
+        weather = weather_hour_string(WEATHER_KEY,city)
+
+
+
     messages = [
             {
     "role": "system",
@@ -265,7 +279,7 @@ if __name__ == "__main__":
     import requests
     import get_places as places
     import get_justwatch as justwatch
-    import get_weather as weather
+    from get_weather import weather_hour_string
 
     os.chdir("../")
     # Load environment variables
@@ -281,12 +295,13 @@ if __name__ == "__main__":
     WEATHER_KEY = os.getenv("WEATHER_KEY")
 
     # weather_hour = weather.weather_hour_string(WEATHER_KEY,"bangkok")
-    weather_hour = weather.weather_hour_string(WEATHER_KEY,"london")
+    weather_hour = weather_hour_string(WEATHER_KEY,"london")
 
 
     # response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=25.594095,longitude=85.137566,city="bangkok",country="Thailand")
 
-    response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=51.5072,longitude=0.1276,city="london",country="england")
+    # response = response_from_weather(AZURE_CLIENT, weather=weather_hour,latitude=51.5072,longitude=0.1276)
+    response = response_from_weather(AZURE_CLIENT, latitude=51.5072,longitude=0.1276)
 
     # TODO integrate this into main
    

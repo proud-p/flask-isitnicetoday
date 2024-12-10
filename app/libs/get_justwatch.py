@@ -67,6 +67,7 @@ def get_JUSTWATCH_COUNTRIES():
         'turkey': 'tr',
         'taiwan': 'tw',
         'england': 'uk',
+        'united kingdom': 'uk',
         'united states': 'us',
         'venezuela': 've',
         'south africa': 'za'

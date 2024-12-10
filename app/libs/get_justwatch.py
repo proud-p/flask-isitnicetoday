@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import time
 from selenium.webdriver.chrome.options import Options
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def get_JUSTWATCH_COUNTRIES():
@@ -265,23 +266,34 @@ def get_movie_info(info_url):
         driver.quit()
 
 
-    
+def fetch_movie_info_threaded(movie):
+    """
+    Helper function to fetch movie description in a thread-safe manner.
+    """
+    movie["description"] = get_movie_info(movie["info_url"])
+    return movie
 
 def random_movies_description(movies_list):
-    """Pick 5 movies, or less if there is less than that in the returned list, and get movie descriptions for them, for chatgpt to pick"""
+    """
+    Fetch descriptions for up to 5 movies using threading for parallel execution.
+    """
     final_list = []
-    
-    # min between movie list length and 5
-    iter =min(len(movies_list),5)
+    iter_count = min(len(movies_list), 5)  # Fetch up to 5 movies
 
-    for i in tqdm(range(iter)):
-        movie = movies_list[random.randrange(iter)]
-        info = get_movie_info(movie["info_url"])
-        movie["description"] = info
-        final_list.append(movie)
+    # Randomly sample movies if the list is longer than 5
+    sampled_movies = random.sample(movies_list, iter_count)
 
-        i+=1
-    
+    with ThreadPoolExecutor(max_workers=5) as executor:  # Adjust max_workers based on  system's capacity
+        # Submit tasks to the executor
+        futures = {executor.submit(fetch_movie_info_threaded, movie): movie for movie in sampled_movies}
+
+        # Collect results as they complete
+        for future in tqdm(as_completed(futures), total=iter_count, desc="Fetching movie descriptions"):
+            try:
+                final_list.append(future.result())
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
     return final_list
 
 

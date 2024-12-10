@@ -1,7 +1,7 @@
 # Queries Justwatch.com using selenium to get titles
 
 import geopy
-
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -143,82 +143,89 @@ def get_justwatch_query_url(country, service, genre=None, release_year_from=None
 
 
 def get_movie_list(country, service, genre=None, release_year_from=None, release_year_until=None, headless=True):
-    # get url
-    url = get_justwatch_query_url(
-        country, service, genre, release_year_from, release_year_until)
+    # Generate the URL for JustWatch
+    url = get_justwatch_query_url(country, service, genre, release_year_from, release_year_until)
 
+    # Set up the WebDriver with optional headless mode
+    chrome_options = Options()
     if headless:
-        # Set as headless
-        chrome_options = Options()
         chrome_options.add_argument("--headless=new")
-        # Set up the Selenium WebDriver
-        driver = webdriver.Chrome(options=chrome_options)
 
-    else:
-        # Set up the Selenium WebDriver
-        driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
 
+    try:
         # Load the webpage
-    driver.get(url)
+        driver.get(url)
 
-    # Wait until elements are loaded (adjust the class name based on the actual structure)
-    WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located(
-            (By.CLASS_NAME, "title-list-grid__item"))
-    )
+        # Wait until elements are loaded
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "title-list-grid__item"))
+        )
 
-    # Initialize variables
-    items_to_load = 200
-    loaded_items = 0
-    last_height = driver.execute_script("return document.body.scrollHeight")
+        # FIXME not sure why this is not paginating, so it's loading 100 eventhough I put 200. But moving on for now
+        # Initialize variables
+        items_to_load = 200  # Target number of items to load
+        loaded_items = 0
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        retries = 5  # Stop if no new items load after 5 attempts
+        retry_count = 0
 
-    while loaded_items < items_to_load:
-        # Scroll down
-        driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)  # Wait for content to load
+        while loaded_items < items_to_load and retry_count < retries:
+            # Scroll to the bottom of the page
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)  # Allow time for content to load
 
-        # Get current page content
-        html_content = driver.page_source
-        soup = BeautifulSoup(html_content, 'html.parser')
+            # Parse the page content
+            html_content = driver.page_source
+            soup = BeautifulSoup(html_content, 'html.parser')
 
-        # Find all title items
-        title_items = soup.find_all('div', class_='title-list-grid__item')
-        loaded_items = len(title_items)
-        print(f"Loaded items: {loaded_items}")
+            # Find all movie items
+            title_items = soup.find_all('div', class_='title-list-grid__item')
+            new_loaded_items = len(title_items)
 
-        # Check scroll position
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
+            if new_loaded_items == loaded_items:
+                # No new items loaded
+                retry_count += 1
+                print(f"No new items loaded. Retry {retry_count}/{retries}")
+            else:
+                # New items found
+                loaded_items = new_loaded_items
+                retry_count = 0
+                print(f"Loaded items: {loaded_items}")
 
-    movies = []
-    # Process items
-    for item in title_items[:items_to_load]:
-        try:
-            # Find the image element
-            img = item.find('img', class_='picture-comp__img')
+            # Check scroll height to prevent infinite scrolling
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
 
-            
-            if img:
-                title = img.get('alt', 'No title')
-                image_url = img.get('src', 'No image')
-                link = item.find('a')['href']
+        # Process the loaded movies
+        movies = []
+        for item in title_items[:items_to_load]:
+            try:
+                # Extract movie details
+                img = item.find('img', class_='picture-comp__img')
+                if img:
+                    title = img.get('alt', 'No title')
+                    image_url = img.get('src', 'No image')
+                    link = item.find('a')['href']
 
-                print(f"Title: {title}")
-                print(f"Image URL: {image_url}")
-                print(f"Link to info page: {link}")
-                print("-" * 40)
+                    print(f"Title: {title}")
+                    print(f"Image URL: {image_url}")
+                    print(f"Link to info page: {link}")
+                    print("-" * 40)
 
-                movies.append({"title":title,"image_url":image_url,"info_url":link})
-        except Exception as e:
-            print(f"Error processing item: {e}")
+                    movies.append({"title": title, "image_url": image_url, "info_url": link})
+            except Exception as e:
+                print(f"Error processing item: {e}")
 
-    driver.quit()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        driver.quit()
 
+    # Fetch descriptions for a subset of movies (5 or fewer)
     selected_movies_with_description = random_movies_description(movies_list=movies)
-
     return selected_movies_with_description
 
 # TODO get random movie from list, get information and return all info.
@@ -296,14 +303,94 @@ def random_movies_description(movies_list):
 
     return final_list
 
+def driver_example(country, service, genre=None, release_year_from=None, release_year_until=None, headless=True):
+    # get url
+    url = get_justwatch_query_url(
+        country, service, genre, release_year_from, release_year_until)
+
+    if headless:
+        # Set as headless
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        # Set up the Selenium WebDriver
+        driver = webdriver.Chrome(options=chrome_options)
+    else:
+        # Set up the Selenium WebDriver
+        driver = webdriver.Chrome()
+
+    # Load the webpage
+    driver.get(url)
+
+    # Wait until elements are loaded (adjust the class name based on the actual structure)
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located(
+            (By.CLASS_NAME, "title-list-grid__item"))
+    )
+
+    # Initialize variables
+    items_to_load = 500  # Target number of items
+    loaded_items = 0
+    retries = 5  # Number of retries to stop if no more items are loading
+    retry_count = 0
+
+    while loaded_items < items_to_load and retry_count < retries:
+        # Scroll down
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)  # Wait for content to load
+
+        # Get current page content
+        html_content = driver.page_source
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # Find all title items
+        title_items = soup.find_all('div', class_='title-list-grid__item')
+        new_loaded_items = len(title_items)
+
+        # Check if new items were loaded
+        if new_loaded_items == loaded_items:
+            retry_count += 1
+            print(f"No new items loaded. Retry {retry_count}/{retries}")
+        else:
+            loaded_items = new_loaded_items
+            retry_count = 0  # Reset retry count if new items are loaded
+            print(f"Loaded items: {loaded_items}")
+
+    # Process the items
+    movies = []
+    for item in tqdm(title_items[:items_to_load]):
+        try:
+            # Find the image element
+            img = item.find('img', class_='picture-comp__img')
+            if img:
+                title = img.get('alt', 'No title')
+                image_url = img.get('src', 'No image')
+                link = item.find('a')['href']
+
+                print(f"Title: {title}")
+                print(f"Image URL: {image_url}")
+                print(f"Link to info page: {link}")
+                print("-" * 40)
+
+                movies.append({"title": title, "image_url": image_url, "info_url": link})
+        except Exception as e:
+            print(f"Error processing item: {e}")
+
+    driver.quit()
+    return movies
+
+
+
 
 if __name__ == "__main__":
     import random
 
+    # driver_example(country="thailand", service="Netflix",
+    #                genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
+
     movies = get_movie_list(country="thailand", service="Netflix",
-                   genre="Action", release_year_from=2000, release_year_until=2014)
+                   genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
     
-    print(movies)
+    # print(movies)
     
 
     # movie_info = get_movie_info(movies[random.randrange(1,len(movies))]["info_url"])

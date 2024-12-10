@@ -201,7 +201,7 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
                         f"help the user pick from the recommendations and explain why they should visit these places. Don't pick too many things, we want to give them a chill day.  Prioritise picking things that are currently opened. Here are the recommendations: "
                         f"{function_response}. For each recommendation, provide details such as the opening hours, rating, and a short description."
                         f"Add a fun and conversational comment about these details, making your response engaging and delightful."
-                        f"Focus on being helpful and conversational—no need to call any functions, just respond with a friendly and detailed message! Phrase it like you are planning out the chill day for them from morning till evening."
+                        f"Focus on being helpful and conversational—no need to call any functions, just respond with a friendly and detailed message! Phrase it like you are planning out the chill day for them from morning till evening. Put lots of emoji in as well for cuteness and format the response into paragraphs nicely"
                     )
                 })
 
@@ -214,7 +214,7 @@ def response_from_weather(AZURE_CLIENT, weather,city,latitude,longitude,country)
                         f"Help the user choose from the recommendations and explain why they should watch a particular movie.  "
                         f"Here are the movie recommendations: {function_response}. For each movie, provide details such as the title, genre, release year, and streaming service it is available on. "
                         f"Add a fun and conversational comment about the movie's plot, cast, or general vibe to make the recommendation engaging. Link the genre or vibes of the movie to the weather to explain why you picked them for the user"
-                        f"Focus on being witty and approachable, but also ensure your response is clear and informative. There is no need to call any functions—just respond with an engaging and detailed message!"
+                        f"Focus on being witty and approachable, but also ensure your response is clear and informative. There is no need to call any functions—just respond with an engaging and detailed message! Put lots of emoji in as well for cuteness and format the response into paragraphs nicely"
                     )
                 })
 

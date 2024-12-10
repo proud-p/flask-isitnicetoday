@@ -1,24 +1,72 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Weather Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is It Nice Today in... {{city}}?</title>
+  <link rel="icon" type="image/x-icon" href="/static/images/cloud_icon.png">
+  <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
-  <h1>Weather Results for {{ city }}</h1>
-  <div id="weather-info">
-      {{ weather }}
-  </div>
-  <div id="location-info">
-      Country: {{country}}<br>
-      City: {{city}}<br>
-      Latitude: {{ coordinates.lat }}<br>
-      Longitude: {{ coordinates.lon }}
+  <!-- Title banner with images -->
+  <div id="title-banner-container">
+    <img src="/static/images/cute_sun.png" alt="Sun" id="sun-image">
+    <img src="/static/images/cloud_icon.png" alt="Cloud" id="cloud-image">
+    <h1 id="title-banner">Is It Nice Today?</h1>
   </div>
 
-  <div id="chatgpt_response">
-    <p>{{response | safe}}</p>
+  <div id="profile-container">
+    <a href="{{ url_for('index') }}" id="profile-button">
+        <img src="/static/images/profile.png" alt="Profile" style="z-index: 2;">
+    </a>
+    <div id="profile-text">
+        <img src="/static/images/profile_text.svg" alt="Profile Text" 
+     style="width: 200px; z-index: 1; position: relative; top: -30px;">
+
+    </div>
+</div>
+
+
+  <!-- Weather and location aligned in the same row -->
+  <div id="info-container">
+    <div id="weather-info">
+      <p>Weather: <span class="rounded-grey-box">{{ weather }}</span></p>
+    </div>
+    <div id="location-info">
+      <p>Location: <span class="rounded-grey-box">{{ city }} , {{ country }}</span></p>
+    </div>
   </div>
-  <a href="{{ url_for('index') }}">Back to Home</a>
+
+  <!-- Main content section -->
+  <div id="main-content">
+    <!-- Left column with sticker-like images -->
+    <div id="left-column">
+        <div id="sticker-container">
+          <img src="/static/images/image (16).png" alt="Sticker 1" class="sticker">
+          <img src="/static/images/image (17).png" alt="Sticker 2" class="sticker">
+          <img src="/static/images/image (18).png" alt="Sticker 3" class="sticker">
+          <img src="/static/images/image (19).png" alt="Sticker 4" class="sticker">
+          <img src="/static/images/image (20).png" alt="Sticker 5" class="sticker">
+        </div>
+      </div>
+      
+      
+      
+
+    <!-- Right column with ChatGPT response -->
+    <div id="right-column">
+      <div id="chatgpt_response">
+        <p>{{ response | safe }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Home button -->
+  
+  <script src="static/js/script.js"></script>
+
 </body>
 </html>
+

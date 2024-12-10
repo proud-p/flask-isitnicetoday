@@ -87,7 +87,7 @@ def results():
 # TODO integrate dallee 3
 # TODO integrate netflix and whatnot 4
 # TODO integrate places 1
-# TODO response from weather fetch api
+
 
 if __name__ == "__main__":
     app.run(debug=True)

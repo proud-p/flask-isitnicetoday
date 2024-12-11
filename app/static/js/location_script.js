@@ -1,10 +1,16 @@
+
+
+
 function getLocation() {
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
     } else {
         alert("Geolocation is not supported by this browser.");
+        // Hide loader if geolocation is not supported
+     
     }
-}
+    }
 
 function showPosition(position) {
     const latitude = position.coords.latitude;
@@ -28,6 +34,8 @@ function showPosition(position) {
     .catch(error => {
         console.error('Error:', error);
         document.getElementById('weather-results').innerHTML = 'Error fetching weather data';
+        document.getElementById("loader").style.display = "none"; // Hide loader
+                        document.getElementById("content").style.display = "block"; // Show content
     });
 }
 

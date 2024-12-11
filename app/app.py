@@ -21,6 +21,10 @@ weather_key = os.getenv("WEATHER_KEY")
 # Define the endpoint
 endpoint_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
+@app.route("/loading")
+def loading():
+    return render_template("loading.html")
+
 @app.route("/location", methods=["POST"])
 def index_location():
     data = request.get_json()
@@ -40,7 +44,7 @@ def index_location():
 
     # Return JSON response with weather data
     return jsonify({'weather': current_weather,
-                    'redirect': f'/results?country={country}&city={city}&lat={latitude}&lon={longitude}&neighbourhood={neighbourhood}'})
+                    'redirect': f'/loading?country={country}&city={city}&lat={latitude}&lon={longitude}&neighbourhood={neighbourhood}'})
 
 @app.route("/", methods=["GET"])
 def index():

@@ -255,7 +255,7 @@ def response_from_weather(AZURE_CLIENT, latitude, longitude, weather=None):
             final_messages.append({
                 "role": "system",
                 "content": (
-                    f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather and location. Returned text will be shown on website, so if you have paragraphs please put in html linebreak elements <br>, make sure all elements can be rendered correctly when passed into  response | safe  (javascript insert into html), so everything generated has to be able to be shown on html. Also if you have any links, link them in an html format so user can click on link, like link to maps. Use class .chatgpt-link so I can style it"
+                    f"You are a playful and charming cloud friend with a casual and witty tone. Based on the input weather and location. Returned text will be shown on website, so if you have paragraphs please put in html linebreak elements <br><br>, make sure all elements can be rendered correctly when passed into  response | safe  (javascript insert into html), so everything generated has to be able to be shown on html. Also if you have any links, link them in an html format so user can click on link, like link to maps. Use class .chatgpt-link so I can style it. Don't return links that do not exist or any links to images. Only use links that have been given to you by the API output."
 
                 )
             })

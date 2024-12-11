@@ -32,6 +32,7 @@ def index_location():
     location = geolocator.reverse(str(latitude)+","+str(longitude))
     city = location.raw["address"]["city"]
     country = location.raw["address"]["country"]
+    neighbourhood = location.raw["address"]["neighbourhood"]
 
     # get weather
     
@@ -39,7 +40,7 @@ def index_location():
 
     # Return JSON response with weather data
     return jsonify({'weather': current_weather,
-                    'redirect': f'/results?country={country}&city={city}&lat={latitude}&lon={longitude}'})
+                    'redirect': f'/results?country={country}&city={city}&lat={latitude}&lon={longitude}&neighbourhood={neighbourhood}'})
 
 @app.route("/", methods=["GET"])
 def index():
@@ -52,6 +53,7 @@ def results():
     country = request.args.get('country')
     lat = request.args.get('lat')
     lon = request.args.get('lon')
+    neighbourhood = request.args.get('neighbourhood')
   
     if not all([city, lat, lon]):
         return redirect(url_for('index'))
@@ -80,6 +82,7 @@ def results():
         country=country,
         weather=current_weather,
         coordinates={'lat': lat, 'lon': lon},
+        neighbourhood=neighbourhood,
         response =response
     )
 

@@ -1,0 +1,474 @@
+/* Fonts */
+@font-face {
+    font-family: 'Anaheim';
+    src: url('/static/fonts/Anaheim/Anaheim-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'DeliusSwashCaps';
+    src: url('/static/fonts/Delius_Swash_Caps/DeliusSwashCaps-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'YujiMai';
+    src: url('/static/fonts/Yuji_Mai/YujiMai-Regular.ttf') format('truetype');
+}
+
+/* General body styling */
+body {
+    background-color: #E0AFA0;
+    /* Warm beige background for a cozy feel */
+    color: #000000;
+    /* Black text for readability */
+    font-family: "Anaheim";
+    /* Clean, modern, and playful typography */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 2rem;
+    padding-left: 5%;
+    padding-top: 2%;
+    max-width: 100%;
+
+
+
+}
+
+/* General body styling */
+.landing-body {
+    background-color: #E0AFA0;
+    /* Warm beige background for a cozy feel */
+    color: #000000;
+    /* Black text for readability */
+    font-family: "Anaheim";
+    /* Clean, modern, and playful typography */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 2rem;
+
+    max-width: 100%;
+
+
+
+}
+
+/* Header styling */
+h1 {
+    font-size: 2.5rem;
+    color: #4A4A6A;
+    /* Slightly darker tone for contrast */
+    margin-top: 20px;
+    font-weight: 600;
+    font-family: "DeliusSwashCaps";
+}
+
+/* Profile button container */
+
+#profile-container {
+    position: absolute;
+    top: 50px;
+    right: 100px;
+    /* Adjust this value to move the button to the left */
+    z-index: 10;
+}
+
+
+/* Profile button styling */
+/* Profile button container */
+#profile-container {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    /* Adjust for placement */
+    z-index: 10;
+    text-align: center;
+    width: auto;
+    height: auto;
+}
+
+/* Profile button styling */
+#profile-button {
+    display: inline-block;
+    position: relative;
+    /* For image positioning */
+    width: 200px;
+    /* Size of the circular button */
+    height: 200px;
+    /* Make it a perfect circle */
+    border-radius: 50%;
+    overflow: hidden;
+    /* Clip the image inside the circle */
+    border: 2px solid #FFFFFF;
+    /* White border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow for depth */
+    cursor: pointer;
+    /* Indicate it's clickable */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth animations */
+}
+
+/* Profile image inside the button */
+#profile-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure the image fills the circle */
+    border-radius: 50%;
+    /* Make the image itself circular */
+}
+
+/* Curved text SVG styling */
+#profile-svg {
+    position: absolute;
+    top: 110px;
+    /* Position the text below the button */
+    left: -30px;
+    /* Adjust horizontally to align on the bottom-left */
+}
+
+/* Hover effect for button */
+#profile-container:hover {
+    transform: rotate(-10deg);
+    /* Slightly rotate on hover */
+
+}
+
+#profile-button:hover {
+    transform: rotate(10deg);
+    /* Slightly rotate on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    /* Enhance shadow on hover */
+}
+
+
+
+#title-banner {
+    font-size: 4rem;
+    color: #463F3A;
+    /* Slightly darker tone for contrast */
+    margin-top: 2%;
+    font-weight: 400;
+    font-family: "DeliusSwashCaps";
+    text-align: left;
+    width: 90%;
+    margin-left: 2.5%;
+}
+
+/* Add this CSS or modify your existing styles */
+
+/* Title banner container */
+#title-banner-container {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#title-banner-container-landing {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    margin-top: 30%;
+    font-size: 10rem;
+}
+
+/* Title styling */
+#title-banner {
+    font-size: rem;
+    color: #463F3A;
+    font-weight: 400;
+    font-family: "DeliusSwashCaps";
+    z-index: 2;
+    /* Ensure the title stays in front of the cloud */
+    position: relative;
+    /* So it stays on top */
+    margin-left: 5%;
+    margin-top: 6.5%;
+}
+
+/* Title styling */
+#title-banner-landing {
+    font-size: 5rem;
+    color: #463F3A;
+    font-weight: 400;
+    font-family: "DeliusSwashCaps";
+    z-index: 2;
+    /* Ensure the title stays in front of the cloud */
+    position: relative;
+    /* So it stays on top */
+    margin-top: 15rem;
+    min-width: 100%;
+
+
+}
+
+/* Sun image styling */
+#sun-image {
+    position: absolute;
+    top: 30px;
+    left: 32%;
+    /* Adjust to position relative to the banner */
+    width: 300px;
+    /* Adjust size */
+    z-index: 1;
+    /* Behind the title */
+}
+
+/* Cloud image styling */
+#cloud-image {
+    position: absolute;
+    top: 3px;
+    left: 1%;
+    /* Adjust to position relative to the banner */
+    width: 200px;
+    /* Adjust size */
+    z-index: 3;
+    /* In front of the title */
+}
+
+.background-image {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80%;
+    z-index: -1;
+}
+
+
+
+/* Align weather and location on the same line */
+#info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 5px;
+    /* Reduced spacing between elements */
+    border-radius: 10px;
+    width: 90%;
+    padding: 10px;
+    /* Reduced padding */
+    margin: 10px 0;
+    /* Reduced margin */
+}
+
+#weather-info,
+#location-info {
+    flex: 1;
+    /* Equal spacing for weather and location */
+    text-align: left;
+    /* Center the text */
+    margin: 0;
+    /* Remove extra margins */
+}
+
+
+/* Rounded grey box styling for details */
+.rounded-grey-box {
+    background-color: #FFD580;
+    /* White card for contrast */
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for a lift effect */
+    padding: 10px 15px;
+    margin: 10px auto;
+    display: inline-block;
+    font-size: 2rem;
+    font-family: "Anaheim";
+}
+
+.info-container p {
+    font-weight: bold;
+}
+
+/* Main content container */
+#main-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 95%;
+    min-height: 500px;
+
+}
+
+/* Left column styling */
+#left-column {
+    flex: 1;
+    /* Takes up 1 part of the space */
+    text-align: center;
+    margin-right: 5%;
+}
+
+#weather-image {
+    width: 100%;
+    max-width: 500px;
+    /* Larger max size for the image */
+    border-radius: 10px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    /* Increased shadow for prominence */
+}
+
+/* Right column styling */
+#right-column {
+    flex: 1;
+    /* Takes up 2 parts of the space */
+    text-align: left;
+    margin-left: 1%;
+}
+
+/* ChatGPT response box */
+#chatgpt_response {
+    background-color: #FFFAF0;
+    /* Off-white with warmth */
+    border-radius: 20px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    /* More padding for better spacing */
+    max-width: 100%;
+    /* Increased width for larger text area */
+    font-size: 1.5rem;
+    /* Larger font size for readability */
+    line-height: 1.8;
+    /* Adjusted line height for readability */
+    color: #4A4A6A;
+    margin-right: 5%;
+}
+
+/* Sticker container styling */
+#sticker-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 300px;
+}
+
+/* General sticker styling */
+.sticker {
+    position: absolute;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+    /* Increased shadow for prominence */
+    border: 3px solid #FFF;
+    border-radius: 10px;
+    z-index: 1;
+    /* Default z-index */
+    animation: float 4s ease-in-out infinite alternate;
+}
+
+.bubble {
+	height: 250px;
+	width: 40%;
+	min-width: 200px;
+	background: ivory;
+	display: block;
+	margin: 0 auto;
+	border-radius: 20px;
+	margin-top: 50px;
+	font-size: 200px;
+	text-align: center;
+}
+
+.pointer {
+	height: 40px;
+	width: 40px;
+	background: ivory;
+	margin: 0 auto;
+	transform: rotate(45deg);
+	border-radius: 0 0 12px 0;
+	margin-top: -22px;
+	position: relative;
+	left: calc(0.5vw - 50px);
+}
+
+/* DOESNT WORK IDK */
+
+.sticker:hover {
+    position: absolute;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.5);
+    /* Increased shadow for hover effect */
+    border: 3px solid #FFF;
+    border-radius: 10px;
+    transform: rotate(calc(-5deg + 10deg)) translate(10px, -10px);
+    /* Rotate and move */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth animation */
+}
+
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #info-container {
+        flex-direction: column;
+        align-items: center;
+        display: inline-flex;
+    }
+
+    #weather-info,
+    #location-info {
+        margin: 10px 0;
+    }
+
+
+    #weather-image {
+        max-width: 400px;
+        /* Smaller size for smaller screens */
+    }
+
+    #chatgpt_response {
+        font-size: 1.2rem;
+        /* Slightly smaller text for smaller screens */
+        line-height: 1.6;
+    }
+
+    a {
+        width: 90%;
+        text-align: center;
+    }
+}
+
+
+/* Button */
+
+
+
+/* CSS */
+.button-33 {
+  background-color: #c2e1fb;
+  border-radius: 100px;
+  box-shadow: rgba(44, 70, 187, 0.2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 65, 187, 0.15) 0 4px 8px,rgba(46, 44, 187, 0.15) 0 8px 16px,rgba(44, 58, 187, 0.15) 0 16px 32px;
+  color: rgb(77, 78, 117);
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 20px 40px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 3rem;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  font-family: "Anaheim";
+  margin-top: 2rem;
+}
+
+.button-33:hover {
+  box-shadow: rgba(44, 65, 187, 0.35) 0 -25px 18px -14px inset,rgba(44, 58, 187, 0.25) 0 1px 2px,rgba(53, 44, 187, 0.25) 0 2px 4px,rgba(44, 46, 187, 0.25) 0 4px 8px,rgba(44, 46, 187, 0.25) 0 8px 16px,rgba(58, 44, 187, 0.25) 0 16px 32px;
+  transform: scale(1.05) rotate(-1deg);
+}

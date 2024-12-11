@@ -2,68 +2,103 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Get Current Location</title>
-<link rel="stylesheet" href="/static/css/style.css">
+<title>isitnice.today</title>
+<link rel="icon" type="image/x-icon" href="/static/images/cloud_icon.png">
+<link rel="stylesheet" href="static/css/landing.css">
 </head>
-<body>
-<button onclick="getLocation()">Get Weather for My Location</button>
-<div id="weather-results"></div>
 
-<script>
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-}
 
-function showPosition(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    
-    fetch('/location', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ latitude: latitude, longitude: longitude })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.redirect) {
-                  window.location.href = data.redirect;
-              } else {
-                  document.getElementById('weather-results').innerHTML = data.weather;
-              }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('weather-results').innerHTML = 'Error fetching weather data';
-    });
-}
+<body class="landing-body">
+    <div id="title-banner-container-landing ">
+        <img src="/static/images/cute_sun.png" alt="Sun" style="
+          position: absolute;
+          top: 100px;
+          left: 22%;
+          width: 300px;
+          z-index: 1;
+          animation: wiggle 3s ease-in-out infinite;
+        " />
+        <img src="/static/images/cloud_icon.png" alt="Cloud" style="
+          position: absolute;
+          top: 27%;
+          left: 68%;
+          width: 200px;
+          z-index: 3;
+          animation: wiggle2 3s ease-in-out infinite;
+        " />
 
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            alert("User denied the request for Geolocation.");
-            break;
-        case error.POSITION_UNAVAILABLE:
-            alert("Location information is unavailable.");
-            break;
-        case error.TIMEOUT:
-            alert("The request to get user location timed out.");
-            break;
-        case error.UNKNOWN_ERROR:
-            alert("An unknown error occurred.");
-            break;
-    }
-}
-</script>
+        <style>
+            @keyframes wiggle {
+                0% {
+                    transform: rotate(5deg);
+                }
 
+                25% {
+                    transform: rotate(-5deg);
+                }
+
+                50% {
+                    transform: rotate(5deg);
+                }
+
+                75% {
+                    transform: rotate(-5deg);
+                }
+
+                100% {
+                    transform: rotate(5deg);
+                }
+            }
+
+            @keyframes wiggle2 {
+                0% {
+                    transform: rotate(-5deg);
+                }
+
+                25% {
+                    transform: rotate(5deg);
+                }
+
+                50% {
+                    transform: rotate(-5deg);
+                }
+
+                75% {
+                    transform: rotate(5deg);
+                }
+
+                100% {
+                    transform: rotate(-5deg);
+                }
+            }
+        </style>
+        <h1 id="title-banner-landing">Is It Nice Today?</h1>
+    </div>
+
+    <h2>A website for when you are like, ahhhhh what to do today???</h2>
+
+    <div id="profile-container">
+        <a href="profile.html" id="profile-button">
+            <img src="/static/images/profile.png" alt="Profile" style="z-index: 2" />
+        </a>
+        <div id="profile-text">
+            <img src="/static/images/profile_text.svg" alt="Profile Text"
+                style="width: 200px; z-index: 1; position: relative; top: -30px" />
+        </div>
+    </div>
+
+
+
+
+    <button class="button-33" role="button" onclick="getLocation()">Help me Cloudy! I don't know what to do today!</button>
+
+
+    <img src="/static/images/mountain.png" alt="mountain" class="background-image" />
+    <script src="static/js/location_script.js"></script>
 </body>
+
 </html>
 
 <!-- TODO form so user put what streaming services they have -->
- <!-- TODO landing page -->
- <!--add current location more specific to landing page  -->
+<!-- TODO landing page -->
+<!--add current location more specific to landing page  -->

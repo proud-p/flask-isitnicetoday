@@ -86,10 +86,9 @@ def results():
         response =response
     )
 
-# TODO integrate chatgpt 2
 # TODO integrate dallee 3
 # TODO integrate netflix and whatnot 4
-# TODO integrate places 1
+# TODO IMAGES
 
 
 if __name__ == "__main__":

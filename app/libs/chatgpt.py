@@ -153,12 +153,16 @@ def get_place_and_movie(service, events_list, genre=None, release_year_from=None
 
 # Convert user's question into a GraphQL query string
 # FIXME collapse the loc stuff into one
-def response_from_weather(AZURE_CLIENT, latitude, longitude, weather=None):
+def response_from_weather(AZURE_CLIENT, latitude=None, longitude=None, weather=None,city="stockholm"):
     geolocator = Nominatim(user_agent="isitnicetoday")
 
-    location = geolocator.reverse(str(latitude)+","+str(longitude))
-    city = location.raw["address"]["city"]
-    country = location.raw["address"]["country"]
+    if latitude or longitude is not None:
+        location = geolocator.reverse(str(latitude)+","+str(longitude))
+        city = location.raw["address"]["city"]
+        country = location.raw["address"]["country"]
+    
+
+
 
     if weather is None:
         WEATHER_KEY = os.getenv("WEATHER_KEY")

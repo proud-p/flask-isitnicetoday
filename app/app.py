@@ -33,7 +33,7 @@ def index_location():
 
     # initialize Nominatim API 
     geolocator = Nominatim(user_agent="isitnicetoday")
-    location = geolocator.reverse(str(latitude)+","+str(longitude))
+    location = geolocator.reverse(str(latitude)+","+str(longitude),language="en")
     city = location.raw["address"]["city"]
     country = location.raw["address"]["country"]
     neighbourhood = location.raw["address"]["neighbourhood"]
@@ -98,3 +98,5 @@ def results():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+    # 127.0.0.1:5000/results?city=bangkok&country=thailand&lat=13.7563&lon=100.5018&neighbourhood=Clerkenwell%20Green

@@ -157,7 +157,7 @@ def response_from_weather(AZURE_CLIENT, latitude=None, longitude=None, weather=N
     geolocator = Nominatim(user_agent="isitnicetoday")
 
     if latitude or longitude is not None:
-        location = geolocator.reverse(str(latitude)+","+str(longitude))
+        location = geolocator.reverse(str(latitude)+","+str(longitude),language="en")
         city = location.raw["address"]["city"]
         country = location.raw["address"]["country"]
     

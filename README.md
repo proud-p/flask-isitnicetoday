@@ -103,6 +103,7 @@ WEATHER_KEY=
 2. Allow location access to fetch weather and nearby places.
 3. View recommendations tailored to the weather conditions in your area.
 4. Explore movie suggestions for indoor days.
+5. To override the location or weather, edit the query string in the results url. Example: 127.0.0.1:5000/results?city=bangkok&country=thailand&lat=13.7563&lon=100.5018&neighbourhood=Sukumvit
 
 ## Future Enhancements
 

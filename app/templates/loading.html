@@ -1,0 +1,184 @@
+<!-- templates/loading.html -->
+<!DOCTYPE html>
+<html>
+<head>
+<title>Loading...</title>
+<style>
+
+    body{
+        background-color: #E0AFA0; /* Warm beige background for a cozy feel */
+    }
+
+    .load-still {
+    position: absolute;
+    transition: all 1s ease;
+    width: 100%;
+    text-align: center;
+    font-family: "Anaheim";
+    color: #856e6e;
+}
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+.loader {
+    width: 20%;
+    height: 100%;
+    position: relative;
+    animation: dayNightCycle 4s ease-in-out infinite;
+    margin-top: 25%;
+}
+.loader img {
+    width: 100%;
+    height: 100%;
+}
+@keyframes dayNightCycle {
+    0% { transform: rotate(0deg); }
+    40% { transform: rotate(180deg); }
+    60% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    margin: 0;
+    width: 90%;
+}
+
+.loading-messages {
+    position: relative;
+    height: auto; /* Adjust based on your text size */
+}
+
+.message {
+    position: absolute;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 1s ease;
+    width: 100%;
+    text-align: center;
+    font-family: "Anaheim";
+    color: #1b1919;
+}
+
+.load-still {
+    position: absolute;
+    transition: all 1s ease;
+    width: 100%;
+    text-align: center;
+    font-family: "Anaheim";
+    color: #1b1919;
+}
+
+.message.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.message.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+</style>
+</head>
+<body>
+<div class="loader-container">
+  
+<div class="loading-text" style="z-index: 9;">
+    <h1 class="load-still">LOADING...</h1><br><br><br><br><br><br>
+    
+    <div class="loading-messages">
+        <h1 class="message">Consulting with the cloud council...</h1>
+        <h1 class="message">Negotiating with stubborn clouds...</h1>
+        <h1 class="message">Politely asking the sun to behave...</h1>
+        <h1 class="message">Convincing rain clouds to take a break...</h1>
+        <h1 class="message">Untangling wind patterns (they're quite messy today)...</h1>
+        <h1 class="message">Checking if the moon is in a good mood...</h1>
+        <h1 class="message">Bribing the weather sprites with cotton candy clouds...</h1>
+        <h1 class="message">Filing paperwork with the Department of Precipitation...</h1>
+        <h1 class="message">Rearranging clouds for maximum aesthetic appeal...</h1>
+        <h1 class="message">Asking birds to fly in formation (they rarely listen)...</h1>
+        <h1 class="message">Calibrating the rainbow generator...</h1>
+        <h1 class="message">Measuring cloud fluffiness levels...</h1>
+        <h1 class="message">Conducting emergency sunset maintenance...</h1>
+        <h1 class="message">Debugging the weather.exe (again)...</h1>
+        <h1 class="message">Calculating the perfect breeze velocity...</h1>
+        <h1 class="message">Scheduling cloud breaks for optimal sunbathing...</h1>
+        <h1 class="message">Attempting to reason with thunder...</h1>
+        <h1 class="message">Telling cirrus clouds to stop showing off...</h1>
+        <h1 class="message">Giving pep talks to shy cumulus clouds...</h1>
+        <h1 class="message">Ensuring stars are properly polished...</h1>
+        <h1 class="message">Mediating a dispute between wind and rain...</h1>
+        <h1 class="message">Teaching new clouds how to float...</h1>
+        <h1 class="message">Updating the cloud operating system...</h1>
+        <h1 class="message">Sending weather pigeons on their way...</h1>
+        <h1 class="message">Checking the cosmic weather forecast...</h1>
+        </div>
+</div>
+<div class="loader">
+    <img src="\static\images\Group sunmoon.png" alt="Sun and Moon" style="z-index: 0;">
+</div>
+</div>
+<img src="\static\images\mountain.png" alt="mountain" style="
+        position: fixed;
+        bottom: 0;
+        left: 0%;
+        width: 120%;
+        height: 100%;
+        z-index: 1;
+    "/>
+
+<script>
+const messages = document.querySelectorAll('.message');
+let currentIndex = 0;
+
+function showNextMessage() {
+    // Remove active class from current message and add fade-out
+    if (currentIndex > 0) {
+        messages[currentIndex - 1].classList.remove('active');
+        messages[currentIndex - 1].classList.add('fade-out');
+    } else if (currentIndex === 0) {
+        messages[messages.length - 1].classList.remove('active');
+        messages[messages.length - 1].classList.add('fade-out');
+    }
+
+    // Add active class to next message
+    messages[currentIndex].classList.remove('fade-out');
+    messages[currentIndex].classList.add('active');
+
+    // Update index
+    currentIndex = (currentIndex + 1) % messages.length;
+}
+
+// Show first message immediately
+showNextMessage();
+
+// Change message every 2 seconds
+setInterval(showNextMessage, 2000);
+</script>
+
+<script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const city = urlParams.get('city');
+    const country = urlParams.get('country');
+    const lat = urlParams.get('lat');
+    const lon = urlParams.get('lon');
+    const neighbourhood = urlParams.get('neighbourhood');
+
+    // Construct results URL
+    const resultsUrl = `/results?city=${city}&country=${country}&lat=${lat}&lon=${lon}&neighbourhood=${neighbourhood}`;
+    
+    // Redirect to results page
+    window.location.href = resultsUrl;
+</script>
+
+</body>
+</html>

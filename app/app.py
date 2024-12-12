@@ -63,6 +63,7 @@ def results():
         return redirect(url_for('index'))
         
     current_weather = weather.get_weather_current(weather_key, city)
+    weather_hour = weather.weather_hour_string(weather_key,city)
     # places_near_me = places.get_places(lon,lat)
     # print(places_near_me)
 
@@ -78,7 +79,7 @@ def results():
     # FIXME dont do this in main do it in chatgpt then just import the entire thing
     # chat_weather_response = chatgpt.response_from_weather(client = AZURE_CLIENT, weather=current_weather,)
 
-    response = response_from_weather(AZURE_CLIENT,latitude=lat,longitude=lon)
+    response = response_from_weather(AZURE_CLIENT,latitude=lat,longitude=lon, weather=weather_hour)
 
     return render_template(
         "results.html",

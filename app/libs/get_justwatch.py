@@ -401,8 +401,8 @@ def driver_example(country, service, genre=None, release_year_from=None, release
 if __name__ == "__main__":
     import random
 
-    # driver_example(country="thailand", service="Netflix",
-    #                genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
+    driver_example(country="thailand", service="Netflix",
+                   genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
 
     # movies = get_movie_list(country="thailand", service="Netflix",
     #                genre="Action", release_year_from=2000, release_year_until=2014, headless=False)
@@ -413,22 +413,22 @@ if __name__ == "__main__":
     # movie_info = get_movie_info(movies[random.randrange(1,len(movies))]["info_url"])
 
 
-    import multiprocessing
-    multiprocessing.freeze_support()
+    # import multiprocessing
+    # multiprocessing.freeze_support()
 
-    try:
-        movies = get_movie_list(
-            country="thailand", 
-            service="Netflix",
-            genre="Action", 
-            release_year_from=2000, 
-            release_year_until=2014, 
-            headless=True
-        )
-        print(f"Found {len(movies)} movies with descriptions")
+    # try:
+    #     movies = get_movie_list(
+    #         country="thailand", 
+    #         service="Netflix",
+    #         genre="Action", 
+    #         release_year_from=2000, 
+    #         release_year_until=2014, 
+    #         headless=True
+    #     )
+    #     print(f"Found {len(movies)} movies with descriptions")
         
-        print(movies)
-    except Exception as e:
-        print(f"Error in main execution: {e}")
+    #     print(movies)
+    # except Exception as e:
+    #     print(f"Error in main execution: {e}")
     
     

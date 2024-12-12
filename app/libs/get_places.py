@@ -53,7 +53,7 @@ def get_places_event(event,longitude,latitude):
         print("Error:", response.status_code, response.text)
 
 
-def extract_recommended_places(function_response):
+def extract_recommended_places_one(function_response):
     recommendations = {}
     for event in function_response:
         for category, places in event.items():
@@ -72,6 +72,34 @@ def extract_recommended_places(function_response):
                 }
     return recommendations
 
+def extract_recommended_places(function_response):
+    recommendations = {}
+    for event in function_response:
+        for category, places in event.items():
+            # Filter operational places and sort by rating
+            operational_places = [
+                place for place in places 
+                if place["business_status"] == "OPERATIONAL"
+            ]
+            # Sort by rating (highest first) and take top 5
+            top_places = sorted(
+                operational_places, 
+                key=lambda x: x.get("rating", 0), 
+                reverse=True
+            )[:5]
+            
+            if top_places:
+                recommendations[category] = []
+                for place in top_places:
+                    recommendations[category].append({
+                        "name": place["name"],
+                        "rating": place.get("rating"),
+                        "vicinity": place.get("vicinity"),
+                        "photo": place.get("photos", [{}])[0].get("photo_reference"),
+                        "opening_hours": place.get("opening_hours", {}).get("open_now")
+                    })
+    return recommendations
+
 
 def format_recommendations(recommendations, filter_open=False):
     """
@@ -85,30 +113,32 @@ def format_recommendations(recommendations, filter_open=False):
         str: A formatted string of recommendations.
     """
     formatted = []
-    for category, details in recommendations.items():
-        # Filter for open places if filter_open is True
-        if filter_open and not details.get("opening_hours"):
-            continue  # Skip places that are not open
+    for category,places in recommendations.items():
+        # list of places, format detail for each place
+        for details in places:  
+            # Filter for open places if filter_open is True
+            if filter_open and not details.get("opening_hours"):
+                continue  # Skip places that are not open
 
-        recommendation_text = (
-            f"{category.capitalize()} Recommendation:\n"
-            f"Name: {details['name']}\n"
-            f"Rating: {details['rating']} ⭐\n"
-            f"Vicinity: {details['vicinity']}\n"
-        )
-        if details.get("photo"):
-            recommendation_text += f"Photo: {details['photo']}\n"
-        if details.get("opening_hours") is not None:
-            recommendation_text += (
-                "Currently Open: Yes\n" if details["opening_hours"] else "Currently Open: No\n"
+            recommendation_text = (
+                f"{category.capitalize()} Recommendation:\n"
+                f"Name: {details['name']}\n"
+                f"Rating: {details['rating']} ⭐\n"
+                f"Vicinity: {details['vicinity']}\n"
             )
-        formatted.append(recommendation_text)
+            if details.get("photo"):
+                recommendation_text += f"Photo: {details['photo']}\n"
+            if details.get("opening_hours") is not None:
+                recommendation_text += (
+                    "Currently Open: Yes\n" if details["opening_hours"] else "Currently Open: No\n"
+                )
+            formatted.append(recommendation_text)
     
     return "\n".join(formatted)
 
 
 if __name__ == "__main__":
 
-    response = get_places('park,art_gallery,zoo')
+    response = get_places('park,cafe,zoo',longitude=-0.1021067,latitude=51.5244376)
 
-    print(response)
+    print(response) 
